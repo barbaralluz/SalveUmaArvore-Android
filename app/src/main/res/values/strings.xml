@@ -1,0 +1,68 @@
+<resources>
+    <string name="app_name">Salve uma Árvore</string>
+
+    <string name="facebook_app_id">748657411909785</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_login">Acesso</string>
+    <string name="title_activity_registrar">Registro</string>
+
+    <string name="hello_world">Hello world!</string>
+
+    <string name="title_activity_home">Home</string>
+    <string name="dummy_button">Cadastrar de Árvore</string>
+    <string name="dummy_content">MAPA</string>
+    <string name="title_activity_cadastro_arvore">Cadastro de Árvore</string>
+    <string name="logout">Logout</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="cadastro">Cadastrar Árvore</string>
+    <string name="voltar">Voltar ao Mapa</string>
+
+    <string name="condicao_prompt">Informe condição da Árvore</string>
+
+    <string-array name="condicao_arrays">
+        <item>Boa - Sem sinal de praga, danos ou doenças</item>
+        <item>Regular - Pequenos sinais de praga, danos ou doenças</item>
+        <item>Ruim - Risco de queda, sinal de forte ataque de pragas, doenças e danos</item>
+        <item>Caída - Árvore caída</item>
+    </string-array>
+
+    <string name="altura_prompt">Informe Altura da Árvore</string>
+
+    <string-array name="altura_arrays">
+        <item>Muda - Até 1 m</item>
+        <item>Pequeno Porte - Entre 1 e 3 m</item>
+        <item>Médio Porte - Entre 3 e 6 m</item>
+        <item>Grande Porte - Mais que 6 m</item>
+    </string-array>
+
+    <string name="raiz_prompt">Informe condição da Raíz da Árvore</string>
+
+    <string-array name="raiz_arrays">
+        <item>Não apresenta problemas - Raízes profundas e sem danos a edificações e pisos próximos</item>
+        <item>Aponta - Raízes superficiais, sem rachaduras, elevação ou desníveis</item>
+        <item>Quebra - Raízes  expostas, presença de algumas rachaduras</item>
+        <item>Destrói - Raízes expostas, destruição da calçada</item>
+    </string-array>
+
+    <string name="luz_prompt">Informe se há presença de Fiação</string>
+
+    <string-array name="luz_arrays">
+        <item>Presente sem conflito</item>
+        <item>Presente com conflito</item>
+        <item>Ausente</item>
+    </string-array>
+
+    <string name="man_prompt">Informe necessidade de Manutenção</string>
+    <string name="sincronizar">Sincronizar Dados</string>
+
+    <string-array name="man_arrays">
+        <item>Sem necessidade</item>
+        <item>Afastar de construções</item>
+        <item>Liberar Rede Elétrica</item>
+        <item>Remover ramos que atrapalham trânsito de pedestres ou veículos</item>
+    </string-array>
+    <string name="title_activity_simple_contact">SImpleContactActivity</string>
+</resources>
