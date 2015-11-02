@@ -7,11 +7,12 @@
         android:orderInCategory="100" app:showAsAction="never" /> -->
 
     <item android:id="@+id/cadastro" android:title="@string/cadastro"
-        android:orderInCategory="100" app:showAsAction="never" />
+        android:orderInCategory="100"  />
 
-    <item android:id="@+id/sincronizar" android:title="@string/sincronizar"
-        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/list_tree" android:title="@string/list_tree"
+        android:orderInCategory="100"  />
 
     <item android:id="@+id/logout" android:title="@string/logout"
-        android:orderInCategory="100" app:showAsAction="never" />
+        android:orderInCategory="100" />
+
 </menu>

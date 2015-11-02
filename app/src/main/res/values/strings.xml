@@ -10,7 +10,7 @@
     <string name="hello_world">Hello world!</string>
 
     <string name="title_activity_home">Home</string>
-    <string name="dummy_button">Cadastrar de Árvore</string>
+    <string name="dummy_button">Cadastro de Árvore</string>
     <string name="dummy_content">MAPA</string>
     <string name="title_activity_cadastro_arvore">Cadastro de Árvore</string>
     <string name="logout">Logout</string>
@@ -18,7 +18,7 @@
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="cadastro">Cadastrar Árvore</string>
-    <string name="voltar">Voltar ao Mapa</string>
+    <string name="voltar">Voltar a Home</string>
 
     <string name="condicao_prompt">Informe condição da Árvore</string>
 
@@ -64,5 +64,11 @@
         <item>Liberar Rede Elétrica</item>
         <item>Remover ramos que atrapalham trânsito de pedestres ou veículos</item>
     </string-array>
-    <string name="title_activity_simple_contact">SImpleContactActivity</string>
+
+    <string name="title_activity_simple_contact">Detalhes da Árvore</string>
+    <string name="title_activity_trees">Todas as Árvores</string>
+    <string name="title_activity_single_tree_">Detalhes da Árvore</string>
+    <string name="list_tree">Todas as Árvores</string>
+    <string name="menu_login">Login</string>
+    <string name="voltar_list">Todas as Árvores</string>
 </resources>

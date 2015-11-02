@@ -24,16 +24,16 @@ public class SessionManager {
     int PRIVATE_MODE = 0;
 
     // Sharedpref file name
-    private static final String PREF_NAME = "AndroidHivePref";
+    private static final String PREF_NAME = "AndroidPref";
 
     // All Shared Preferences Keys
     private static final String IS_LOGIN = "IsLoggedIn";
 
     // User name (make variable public to access from outside)
-    public static final String KEY_NAME = "name";
+    public static final String KEY_ID = "id";
 
     // Email address (make variable public to access from outside)
-    public static final String KEY_EMAIL = "email";
+    public static final String KEY_USERNAME = "username";
 
     // Constructor
     public SessionManager(Context context){
@@ -51,10 +51,10 @@ public class SessionManager {
         editor.putBoolean(IS_LOGIN, true);
 
 // Storing name in pref
-        editor.putString(KEY_NAME, name);
+        editor.putString(KEY_ID, name);
 
 // Storing email in pref
-        editor.putString(KEY_EMAIL, email);
+        editor.putString(KEY_USERNAME, email);
 
 // commit changes
         editor.commit();
@@ -87,11 +87,11 @@ public class SessionManager {
      * */
     public HashMap<String, String> getUserDetails(){
         HashMap<String, String> user = new HashMap<String, String>();
-// user name
-        user.put(KEY_NAME, pref.getString(KEY_NAME, null));
+// user id
+        user.put(KEY_ID, pref.getString(KEY_ID, null));
 
-// user email id
-        user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
+// user username
+        user.put(KEY_USERNAME, pref.getString(KEY_USERNAME, null));
 
 // return user
         return user;
@@ -106,7 +106,7 @@ public class SessionManager {
         editor.commit();
 
 
-// After logout redirect user to Loing Activity
+/*// After logout redirect user to Loing Activity
         Intent i = new Intent(_context, LoginActivity.class);
 // Closing all the Activities
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -115,7 +115,7 @@ public class SessionManager {
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
 // Staring Login Activity
-        _context.startActivity(i);
+        _context.startActivity(i);*/
 
     }
 

@@ -1,12 +1,10 @@
 package com.salveumaarvore.barbara.salveumaarvore;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -97,7 +95,7 @@ public class GPSTracker extends Service implements LocationListener {
 	}
 
 
-	public void stopUsingGPS() {
+	/*public void stopUsingGPS() {
 		if (locationManager != null) {
 			if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 				// TODO: Consider calling
@@ -111,8 +109,8 @@ public class GPSTracker extends Service implements LocationListener {
 			}
 			locationManager.removeUpdates(GPSTracker.this);
 		}
-	}
-	
+	}*/
+
 	public double getLatitude() {
 		if(location != null) {
 			latitude = location.getLatitude();

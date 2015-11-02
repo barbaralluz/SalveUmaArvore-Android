@@ -4,11 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,31 +20,46 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import org.osmdroid.DefaultResourceProxyImpl;
-import org.osmdroid.ResourceProxy;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.sql.SQLException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class CadastroArvoreActivity extends Activity {
 
-    EditText editTextReferencia,editTextEspecie, editTextDescricao, editTextLocalizacao;
+    EditText editTextReferencia,editTextEspecie, editTextDescricao, editTextNeighborhood, editTextRoute, editTextNumero, editTextPostalCode;
     Spinner cond_geral, cond_luz, cond_raiz, manutencao, altura;
     Button btnCreateTree;
 
-    TreeDataBaseAdapter treeDataBaseAdapter;
+    String country,neighborhood, route, numero, postal_code, point_of_interest, lat, lon, geometry, condicao_arvore;
+    String especie, altur, condicao_raiz, condicao_luz, condicao_man, descricao, foto1, foto2, foto3;
+    String administrative_area_level_1_id,  locality_id, usuario_id;
+    String path;
+    String ba1;
 
-    MyItemizedOverlay myItemizedOverlay = null;
+    String url = "http://10.0.3.2:8000/trees/";
+    private Uri fileUri; // file url to store image
+
+    private ImageView imgPreview;
+    private Button btnCapturePicture;
+
+    // Response
+    String responseServer;
+
     GPSTracker gps;
     private MapView mapView;
     double latitude, longitude;
-    String path;
 
     // Activity request codes
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 400;
@@ -52,16 +68,15 @@ public class CadastroArvoreActivity extends Activity {
     // directory name to store captured images and videos
     private static final String IMAGE_DIRECTORY_NAME = "SalveUmaArvore_IMGS";
 
-    private Uri fileUri; // file url to store image/video
-
-    private ImageView imgPreview;
-    private Button btnCapturePicture;
-
+    // Session Manager Class
+    SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_arvore);
+
+        session = new SessionManager(getApplicationContext());
 
         imgPreview = (ImageView) findViewById(R.id.imgPreview);
         btnCapturePicture = (Button) findViewById(R.id.btnCapturePicture);
@@ -80,24 +95,10 @@ public class CadastroArvoreActivity extends Activity {
 
         mapView = (MapView)findViewById(R.id.mapview);
 
-        //BoundingBoxE6 bBox = new BoundingBoxE6(-73.817, -33.733, -28.850, 16.800);
-        //map.setScrollableAreaLimit(bBox);
-
         mapView.getController().setZoom(3);
         mapView.setBuiltInZoomControls(true);
-        //mapView.getController().setCenter(new GeoPoint(-12.21119546574942, -50.44919374999993));
-
         ScaleBarOverlay myScaleBarOverlay = new ScaleBarOverlay(this);
         mapView.getOverlays().add(myScaleBarOverlay);
-
-        Drawable marker=this.getResources().getDrawable(android.R.drawable.star_big_on);
-        int markerWidth = marker.getIntrinsicWidth();
-        int markerHeight = marker.getIntrinsicHeight();
-        marker.setBounds(0, markerHeight, markerWidth, 0);
-
-        ResourceProxy resourceProxy = new DefaultResourceProxyImpl(getApplicationContext());
-        myItemizedOverlay = new MyItemizedOverlay(marker, resourceProxy);
-        mapView.getOverlays().add(myItemizedOverlay);
 
         gps = new GPSTracker(CadastroArvoreActivity.this);
 
@@ -107,31 +108,33 @@ public class CadastroArvoreActivity extends Activity {
 
             Toast.makeText(
                     getApplicationContext(),
-                    "Minha Localização\nLat: " + latitude + "\nLong: "
+                    "Sua localização\nLat: " + latitude + "\nLong: "
                             + longitude, Toast.LENGTH_LONG).show();
 
-            myItemizedOverlay.addItem(new GeoPoint(latitude, longitude), "Eu", "Eu");
+            GeoPoint startPoint = new GeoPoint(latitude, longitude);
+
+            Marker startMarker = new Marker(mapView);
+            startMarker.setPosition(startPoint);
+            startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+            mapView.getOverlays().add(startMarker);
+            startMarker.setIcon(getResources().getDrawable(R.drawable.male_21));
+
             mapView.getController().setZoom(10);
             mapView.getController().setCenter(new GeoPoint(latitude, longitude));
         } else {
             gps.showSettingsAlert();
         }
 
-        // get Instance  of Database Adapter
-        treeDataBaseAdapter=new TreeDataBaseAdapter(this);
-        try {
-            treeDataBaseAdapter=treeDataBaseAdapter.open();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
         // Get Refferences of Views
+        editTextNeighborhood=(EditText)findViewById(R.id.editTextNeighborhood);
+        editTextRoute=(EditText)findViewById(R.id.editTextRoute);
+        editTextNumero=(EditText)findViewById(R.id.editTextNumero);
+        editTextPostalCode=(EditText)findViewById(R.id.editTextPostalCode);
         editTextReferencia=(EditText)findViewById(R.id.editTextPReferencia);
+        cond_geral=(Spinner)findViewById(R.id.spinnerCondicao);
         editTextEspecie=(EditText)findViewById(R.id.editTextEspecie);
         editTextDescricao=(EditText)findViewById(R.id.editTextDescricao);
 
-
-        cond_geral=(Spinner)findViewById(R.id.spinnerCondicao);
         cond_luz=(Spinner)findViewById(R.id.spinnerLuz);
         cond_raiz=(Spinner)findViewById(R.id.spinnerRaiz);
         manutencao=(Spinner)findViewById(R.id.spinnerMan);
@@ -143,43 +146,72 @@ public class CadastroArvoreActivity extends Activity {
             public void onClick(View v) {
                 // TODO Auto-generated method stub
 
-                String lat = String.valueOf(latitude);
-                String lon = String.valueOf(longitude);
+                country = "Brazil";
+                administrative_area_level_1_id = "35";
+                locality_id = "3549904";
+                neighborhood = editTextNeighborhood.getText().toString();
+                route = editTextRoute.getText().toString();
+                numero = editTextNumero.getText().toString();
+                postal_code = editTextPostalCode.getText().toString();;
+                point_of_interest = editTextReferencia.getText().toString();
 
-                String referencia = editTextReferencia.getText().toString();
-                String especie = editTextEspecie.getText().toString();
+                lat = String.valueOf(latitude);
+                lon = String.valueOf(longitude);
+                geometry = "POINT(" +  lat + " " + lon + ")";
 
+                condicao_arvore = cond_geral.getSelectedItem().toString();
+                especie = editTextEspecie.getText().toString();
+                altur = altura.getSelectedItem().toString();
+                condicao_raiz = cond_raiz.getSelectedItem().toString();
+                condicao_luz = cond_luz.getSelectedItem().toString();
+                condicao_man = manutencao.getSelectedItem().toString();
+                descricao = editTextDescricao.getText().toString();
+                String data_cadastro = getDateTime();
 
-                String geral = cond_geral.getSelectedItem().toString();
-                String alt = altura.getSelectedItem().toString();
-                String raiz = cond_raiz.getSelectedItem().toString();
-                String luz = cond_luz.getSelectedItem().toString();
-                String man = manutencao.getSelectedItem().toString();
-                String descricao = editTextDescricao.getText().toString();
-
+                //para a foto
                 if (fileUri != null){
                     path = fileUri.getPath();
                 } else {
-                    path = " ";
+                    path = null;
                 }
 
+                Log.e("path", "----------------" + path);
 
-                treeDataBaseAdapter.insertEntry(lat, lon, referencia, especie, geral, alt, raiz, luz, man, descricao, path);
+                // Image
+                Bitmap bm = BitmapFactory.decodeFile(path);
+                ByteArrayOutputStream bao = new ByteArrayOutputStream();
+                bm.compress(Bitmap.CompressFormat.JPEG, 90, bao);
+                byte[] ba = bao.toByteArray();
+                ba1 = Base64.encodeToString(ba, 1);
+
+                Log.e("base64", "-----" + ba1);
+
+                foto1 = ba1;
+                foto2 = " ";
+                foto3 = " ";
+
+                usuario_id = session.getUserDetails().get("id");
+
+                Log.e("id ", usuario_id);
+
+                AsyncT asyncT = new AsyncT();
+                asyncT.execute();
+
+
                 Toast.makeText(getApplicationContext(), "Árvore cadastrada com sucesso! ", Toast.LENGTH_LONG).show();
 
-                Intent i = new Intent(CadastroArvoreActivity.this, HomeActivity.class);
+                Intent i = new Intent(CadastroArvoreActivity.this, LoginActivity.class);
                 startActivity(i);
+                finish();
 
             }
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        // TODO Auto-generated method stub
-        super.onDestroy();
-
-        treeDataBaseAdapter.close();
+    private String getDateTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 
 
@@ -329,11 +361,65 @@ public class CadastroArvoreActivity extends Activity {
         int id = item.getItemId();
 
 
-        if (id == R.id.logout) {
+        if (id == R.id.voltar) {
+            finish();
             return true;
         }
+
+
+
 
         return super.onOptionsItemSelected(item);
     }
 
+    /* Inner class to get response */
+    class AsyncT extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            ServiceHandler sh = new ServiceHandler();
+
+            try {
+
+                List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
+
+                postParameters.add(new BasicNameValuePair("geometry", geometry));
+                postParameters.add(new BasicNameValuePair("country", country));
+                postParameters.add(new BasicNameValuePair("administrative_area_level_1", administrative_area_level_1_id));
+                postParameters.add(new BasicNameValuePair("locality", locality_id));
+                postParameters.add(new BasicNameValuePair("neighborhood", neighborhood));
+                postParameters.add(new BasicNameValuePair("route", route));
+                postParameters.add(new BasicNameValuePair("numero",numero));
+                postParameters.add(new BasicNameValuePair("postal_code", postal_code));
+                postParameters.add(new BasicNameValuePair("condicao_arvore", condicao_arvore));
+                postParameters.add(new BasicNameValuePair("especie", especie));
+                postParameters.add(new BasicNameValuePair("altura", altur));
+                postParameters.add(new BasicNameValuePair("condicao_raiz", condicao_raiz));
+                postParameters.add(new BasicNameValuePair("condicao_luz", condicao_luz));
+                postParameters.add(new BasicNameValuePair("condicao_man", condicao_man));
+                postParameters.add(new BasicNameValuePair("descricao", descricao));
+                postParameters.add(new BasicNameValuePair("foto1", foto1));
+                postParameters.add(new BasicNameValuePair("usuario", usuario_id));
+
+                Log.i("Parameters", postParameters.toString());
+
+                // Execute HTTP Post Request
+                responseServer = sh.makeServiceCall(url, ServiceHandler.POST, postParameters);
+
+                Log.e("response", "response -----" + responseServer);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+    }
+
 }
+
+
+
