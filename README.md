@@ -20,11 +20,6 @@ ZNC Sistemas
 
 * **Java + Android Studio**
 
-
-* **SQLite**  
-Banco de dados, o SQlite foi utilizado para armazenar dados locais.
-
-
 * **OSMDroid**
 Bibliotecas javascript open source utilizada para carregar e exibir mapas.
 
