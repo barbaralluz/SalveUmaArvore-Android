@@ -71,10 +71,15 @@ public class ServiceHandler {
                 HttpGet httpGet = new HttpGet(url);
 
                 httpResponse = httpClient.execute(httpGet);
-
             }
-            httpEntity = httpResponse.getEntity();
-            response = EntityUtils.toString(httpEntity);
+
+            if (httpResponse.getStatusLine().getStatusCode()==200 || httpResponse.getStatusLine().getStatusCode()==201
+                || httpResponse.getStatusLine().getStatusCode()==202){
+                httpEntity = httpResponse.getEntity();
+                response = EntityUtils.toString(httpEntity);
+            } else {
+                response = httpResponse.getStatusLine().toString();
+            }
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

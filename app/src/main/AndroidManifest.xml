@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.salveumaarvore.barbara.salveumaarvore" >
+    package="com.salveumaarvore.barbara.salveumaarvore"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -17,6 +18,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
         <activity
             android:name=".SplashActivity"
             android:label="@string/app_name"
@@ -52,10 +54,6 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity
-            android:name=".TreesActivity"
-            android:label="@string/title_activity_trees" >
-        </activity>
         <activity
             android:name=".SingleTree_Activity"
             android:label="@string/title_activity_single_tree_" >

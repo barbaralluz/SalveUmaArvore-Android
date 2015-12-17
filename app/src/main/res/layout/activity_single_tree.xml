@@ -1,28 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp">
 
-    <!-- Espécie Label -->
-    <TextView android:id="@+id/especie_label"
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+    <!-- Id Label -->
+    <TextView android:id="@+id/id_label"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="25dip"
+        android:textSize="20dip"
         android:textStyle="bold"
         android:paddingTop="10dip"
         android:paddingBottom="10dip"
-        android:textColor="#43bd00"/>
-    <!-- Endereço Label -->
-    <TextView android:id="@+id/endereco_label"
+        android:textColor="#43bd00"
+        android:gravity="center"/>
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView_foto1"
+            android:layout_gravity="center" />
+
+        <!-- Espécie Label -->
+        <TextView android:id="@+id/especie_label"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textColor="#acacac"/>
+        android:textStyle="bold"
+        android:paddingTop="6dip"
+        android:paddingBottom="6dip"/>
+
+    <!-- Endereço Label -->
+
+        <TextView android:id="@+id/address_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dip"
+        android:paddingBottom="6dip"/>
+
+    <!-- Ponto de Referencia Label -->
+    <TextView android:id="@+id/reference_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="2dip"
+        android:paddingBottom="2dip"/>
+
+    <!-- Altura Label -->
+    <TextView android:id="@+id/altura_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dip"
+        android:paddingBottom="6dip"/>
+
     <!-- CondiçãoGeral Label -->
     <TextView android:id="@+id/condicaoGeral_label"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"/>
-</LinearLayout>
+        android:paddingTop="6dip"
+        android:paddingBottom="6dip"/>
+
+    <!-- CondiçãoRaiz Label -->
+    <TextView android:id="@+id/condicaoRaiz_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dip"
+        android:paddingBottom="6dip"/>
+
+    <!-- CondiçãoLuz Label -->
+    <TextView android:id="@+id/condicaoLuz_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dip"
+        android:paddingBottom="6dip"/>
+
+    <!-- CondiçãoManutencao Label -->
+    <TextView android:id="@+id/condicaoManutencao_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dip"
+        android:paddingBottom="6dip"/>
+
+    <!-- informações Label -->
+    <TextView android:id="@+id/informacoes_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dip"
+        android:paddingBottom="6dip"/>
+
+    <!-- Usuário Label -->
+    <TextView android:id="@+id/usuario_label"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="6dip"
+        android:paddingBottom="6dip"/>
+
+    </LinearLayout>
+</ScrollView>

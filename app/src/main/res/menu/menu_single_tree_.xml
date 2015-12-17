@@ -3,9 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.salveumaarvore.barbara.salveumaarvore.SingleTree_Activity">
 
-    <item android:id="@+id/voltar_list" android:title="@string/voltar_list"
-        android:orderInCategory="100"  />
-
     <item android:id="@+id/voltar" android:title="@string/voltar"
         android:orderInCategory="100"  />
 

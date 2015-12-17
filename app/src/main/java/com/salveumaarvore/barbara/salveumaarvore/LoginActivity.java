@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,15 +18,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoginActivity extends Activity implements View.OnClickListener {
+public class LoginActivity extends Activity{
 
     String responseServer;
     String userName, password;
-
+    String url = "http://159.203.142.217/rest-auth/loggin/";
     Button btnSignIn;
 
     // Session Manager Class
     SessionManager session;
+
+    AsyncTLogin asyncT = new AsyncTLogin();
 
 
     @Override
@@ -38,8 +38,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
 
         session = new SessionManager(getApplicationContext());
-        Toast.makeText(getApplicationContext(), "User Login Status: " + session.isLoggedIn(), Toast.LENGTH_LONG).show();
-
 
         boolean logado = session.isLoggedIn(); //Pega do prefs se já está criado
         if(logado){
@@ -61,41 +59,21 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         userName = editTextUserName.getText().toString();
         password = editTextPassword.getText().toString();
 
-        AsyncT asyncT = new AsyncT();
         asyncT.execute();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu_home; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-
-        return false;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onClick(View v) {
-
-    }
 
     /* Inner class to get response */
-    class AsyncT extends AsyncTask<Void, Void, Void> {
+    class AsyncTLogin extends AsyncTask<Void, Void, Void> {
+
+        ServiceHandler sh = new ServiceHandler();
+
+        User user_sistema;
+
         @Override
         protected Void doInBackground(Void... voids) {
 
-            ServiceHandler sh = new ServiceHandler();
+
 
             try {
 
@@ -103,20 +81,20 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 postParameters.add(new BasicNameValuePair("username", userName));
                 postParameters.add(new BasicNameValuePair("password", password));
 
-                responseServer = sh.makeServiceCall("http://10.0.2.2:8000/rest-auth/loggin/", ServiceHandler.POST, postParameters);
+                responseServer = sh.makeServiceCall(url, ServiceHandler.POST, postParameters);
 
-                //Log.e("response", "response -----" + responseServer);
+                Log.e("response", "response -----" + responseServer);
 
                 if (responseServer.contains("id")){
 
                     JSONObject jsonObj  = new JSONObject(responseServer);
 
                     //Cria sessão para o usuário
-                    User user_sistema = new User(jsonObj.getInt("id"), jsonObj.getString("username"), jsonObj.getString("email"));
+                    user_sistema = new User(jsonObj.getInt("id"), jsonObj.getString("username"), jsonObj.getString("email"));
 
-                    Log.e("id", jsonObj.getString("id"));
+                    /*Log.e("id", jsonObj.getString("id"));
                     Log.e("username", jsonObj.getString("username"));
-                    Log.e("email", jsonObj.getString("email"));
+                    Log.e("email", jsonObj.getString("email"));*/
 
                     session.createLoginSession(String.valueOf(user_sistema.getId()), user_sistema.getUsername());
 
@@ -136,6 +114,18 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+
+            if (responseServer.contains("id")){
+
+                Intent i = new Intent(LoginActivity.this, HomeActivity.class);
+                startActivity(i);
+                finish();
+
+            } else {
+
+                Toast.makeText(getApplicationContext(), "Usuário inválido !", Toast.LENGTH_LONG).show();
+            }
+
         }
     }
 

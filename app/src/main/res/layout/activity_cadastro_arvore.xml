@@ -14,190 +14,275 @@
         android:orientation="vertical"
         android:weightSum="1">
 
-        <org.osmdroid.views.MapView
-            android:id="@+id/mapview"
-            android:layout_width="match_parent"
-            android:layout_height="191dp"
-            android:clickable="true"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="0.30" />
-
-        <EditText
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/editTextAdministrative_Area_1"
-            android:hint="São Paulo"
-            android:focusable="false"
-            android:layout_marginTop="5dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:text="São Paulo" />
+            android:text="* Campos obrigatórios"
+            android:id="@+id/textView_camposObrigatorios"
+            android:textStyle="bold"
+            android:textSize="16dip"
+            android:textColor="#43bd00"
+            android:paddingTop="10dip"
+            android:paddingBottom="10dip"
+            android:gravity="center"
+            android:layout_gravity="center" />
 
-        <EditText
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/myaddress"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editTextLocality"
-            android:hint="São José dos Campos"
-            android:focusable="false"
-            android:layout_marginTop="5dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:text="São José dos Campos" />
+            android:textSize="18dip"
+            android:textStyle="bold"
+            android:paddingTop="10dip"
+            android:paddingBottom="10dip"/>
 
-        <EditText
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/editTextNeighborhood"
-            android:hint="Bairro"
-            android:focusable="true"
-            android:layout_marginTop="5dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/editTextPostalCode"
-            android:hint="CEP"
-            android:focusable="true"
-            android:layout_marginTop="5dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/editTextRoute"
-            android:hint="Logradouro"
-            android:focusable="true"
-            android:layout_marginTop="5dp"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:text="Informe número: *"
+            android:id="@+id/textView_numero"
+            android:textStyle="bold"
+            android:textColor="#43bd00"
+            android:paddingTop="10dip"
+            android:textSize="16dip"/>
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/editTextNumero"
-            android:hint="Numero"
+            android:hint="Número"
+            android:focusable="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:textSize="16dip"
+            android:paddingBottom="10dip" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Informe ponto de referência: "
+            android:id="@+id/textView_referencia"
+            android:textStyle="bold"
+            android:textSize="16dip"
+            android:paddingTop="10dip" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editTextPReferencia"
+            android:hint="Ponto de Referência"
+            android:layout_marginTop="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:textSize="16dip"
+            android:paddingBottom="10dip"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Condições da Árvore"
+            android:id="@+id/textView_selecione"
+            android:textStyle="bold"
+            android:textColor="#43bd00"
+            android:paddingTop="10dip"
+            android:paddingBottom="10dip"
+            android:textSize="20dip"
+            android:gravity="center"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selecione abaixo condição geral da árvore: *"
+            android:id="@+id/textView_condicaoGeral"
+            android:textStyle="bold"
+            android:textColor="#43bd00"
+            android:textSize="16dip"
+            android:paddingTop="10dip" />
+
+
+        <Spinner
+            android:id="@+id/spinnerCondicao"
+            android:layout_marginTop="5dp"
+            android:textSize="16dip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/condicao_arrays"
+            android:prompt="@string/condicao_prompt"
+            android:paddingBottom="10dip"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Informe espécie (se souber): "
+            android:id="@+id/textView_espécie"
+            android:textStyle="bold"
+            android:textSize="16dip"
+            android:paddingTop="10dip" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/editTextEspecie"
+            android:hint="Espécie"
             android:focusable="true"
             android:layout_marginTop="5dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
             android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignParentEnd="true"
+            android:textSize="16dip"
+            android:paddingTop="10dip"
+            android:paddingBottom="10dip"/>
 
 
-        <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/editTextPReferencia"
-        android:hint="Ponto de Referência"
-        android:layout_marginTop="5dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selecione abaixo altura da árvore: *"
+            android:id="@+id/textView_altura"
+            android:textStyle="bold"
+            android:textSize="16dip"
+            android:textColor="#43bd00"
+            android:paddingTop="10dip" />
 
         <Spinner
-            android:id="@+id/spinnerCondicao"
+            android:id="@+id/spinnerAltura"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:entries="@array/condicao_arrays"
-            android:prompt="@string/condicao_prompt" />
+            android:entries="@array/altura_arrays"
+            android:prompt="@string/altura_prompt"
+            android:textSize="16dip"
+            android:paddingBottom="10dip"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selecione abaixo condição das raízes da árvore: *"
+            android:id="@+id/textView_condicaoRaiz"
+            android:textStyle="bold"
+            android:textColor="#43bd00"
+            android:textSize="16dip"
+            android:paddingTop="10dip" />
+
+        <Spinner
+            android:id="@+id/spinnerRaiz"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/raiz_arrays"
+            android:prompt="@string/raiz_prompt"
+            android:textSize="16dip"
+            android:paddingBottom="10dip"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selecione abaixo se há presença de rede elétrica: *"
+            android:id="@+id/textView_condicaoLuz"
+            android:textStyle="bold"
+            android:textSize="16dip"
+            android:textColor="#43bd00"
+            android:paddingTop="10dip"/>
+
+        <Spinner
+            android:id="@+id/spinnerLuz"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/luz_arrays"
+            android:prompt="@string/luz_prompt"
+            android:textSize="16dip"
+            android:paddingBottom="10dip"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selecione abaixo se arvore necessita de manutenção: *"
+            android:id="@+id/textView_condicaoMan"
+            android:textStyle="bold"
+            android:textSize="16dip"
+            android:textColor="#43bd00"
+            android:paddingTop="10dip" />
+
+        <Spinner
+            android:id="@+id/spinnerMan"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/man_arrays"
+            android:prompt="@string/man_prompt"
+            android:textSize="16dip"
+            android:paddingBottom="10dip"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Adicione descrição: "
+            android:id="@+id/textView_descricao"
+            android:textStyle="bold"
+            android:textSize="16dip"
+            android:paddingTop="10dip" />
 
         <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/editTextEspecie"
-        android:hint="Espécie"
-        android:focusable="true"
-        android:layout_marginTop="5dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-
-
-
-    <Spinner
-        android:id="@+id/spinnerAltura"
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/altura_arrays"
-        android:prompt="@string/altura_prompt" />
-
-    <Spinner
-        android:id="@+id/spinnerRaiz"
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/raiz_arrays"
-        android:prompt="@string/raiz_prompt" />
-
-    <Spinner
-        android:id="@+id/spinnerLuz"
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/luz_arrays"
-        android:prompt="@string/luz_prompt" />
-
-    <Spinner
-        android:id="@+id/spinnerMan"
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/man_arrays"
-        android:prompt="@string/man_prompt" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:hint="Descrição"
-        android:inputType="textMultiLine"
-        android:ems="10"
-        android:id="@+id/editTextDescricao"
-        android:minLines="3"
-        android:nestedScrollingEnabled="true" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:hint="Descrição"
+            android:textSize="16dip"
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:id="@+id/editTextDescricao"
+            android:minLines="2"
+            android:nestedScrollingEnabled="true"
+            android:paddingBottom="15dip"/>
 
         <Button
             android:id="@+id/btnCapturePicture"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Adicionar Foto"
-            android:layout_marginBottom="10dp"/>
+            android:text="Adicionar Foto *"
+            android:textColor="#43bd00"
+            android:textStyle="bold"
+            android:layout_marginBottom="15dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Observação: Ao clicar em Adicionar Foto é necessário salvar para cadastrar a árvore."
+            android:id="@+id/textView_fotoObrigatoria"
+            android:textStyle="bold"
+            android:textSize="16dip"
+            android:textColor="#43bd00"
+            android:paddingTop="10dip"
+            android:paddingBottom="10dip"
+            android:gravity="center"/>
 
         <ImageView
             android:id="@+id/imgPreview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_below="@+id/btnCapturePicture"
             android:visibility="gone" />
 
         <Button
-        android:id="@+id/buttonSaveTree"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Salvar" />
+            android:id="@+id/buttonSaveTree"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Salvar"
+            android:layout_marginBottom="10dp"/>
 
-    <Button
-        android:id="@+id/buttonCancelTree"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Cancelar" />
+        <Button
+            android:id="@+id/buttonCancelTree"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancelar"
+            android:onClick="cancelar"/>
 
     </LinearLayout>
 

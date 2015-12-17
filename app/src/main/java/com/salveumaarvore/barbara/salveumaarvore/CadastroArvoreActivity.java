@@ -1,9 +1,12 @@
 package com.salveumaarvore.barbara.salveumaarvore;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -18,17 +21,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.osmdroid.bonuspack.overlays.Marker;
-import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.ScaleBarOverlay;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,38 +39,52 @@ import java.util.Locale;
 
 public class CadastroArvoreActivity extends Activity {
 
-    EditText editTextReferencia,editTextEspecie, editTextDescricao, editTextNeighborhood, editTextRoute, editTextNumero, editTextPostalCode;
-    Spinner cond_geral, cond_luz, cond_raiz, manutencao, altura;
-    Button btnCreateTree;
+    //Define ids and name for Estado e Cidade (IBGE)
+    String administrative_area_level_1_id = "35";
+    String administrative_area_level_1 = "São Paulo";
+    String locality_id = "3549904";
+    String locality = "São José dos Campos";
 
-    String country,neighborhood, route, numero, postal_code, point_of_interest, lat, lon, geometry, condicao_arvore;
-    String especie, altur, condicao_raiz, condicao_luz, condicao_man, descricao, foto1, foto2, foto3;
-    String administrative_area_level_1_id,  locality_id, usuario_id;
+    String url = "http://159.203.142.217/trees/";
+
+    EditText editTextReferencia,editTextEspecie, editTextDescricao, editTextNumero;
+    Spinner cond_geral, cond_luz, cond_raiz, manutencao, altura;
+    Button btnCreateTree, btnCancel;
+
+    String country,neighborhood, route, numero, postal_code, point_of_interest;
+    String lat, lon, geometry, especie;
+    String condicao_arvore, altur, condicao_raiz, condicao_luz, condicao_man, descricao, foto1, foto2, foto3;
+    String usuario_id;
     String path;
     String ba1;
 
-    String url = "http://10.0.3.2:8000/trees/";
-    private Uri fileUri; // file url to store image
+    String bairro, rua, cep;
 
-    private ImageView imgPreview;
-    private Button btnCapturePicture;
+
+    Uri fileUri; // file url to store image
+
+    ImageView imgPreview;
+    Button btnCapturePicture;
 
     // Response
     String responseServer;
 
     GPSTracker gps;
-    private MapView mapView;
     double latitude, longitude;
 
     // Activity request codes
-    private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 400;
-    public static final int MEDIA_TYPE_IMAGE = 1;
+    static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 400;
+    static final int MEDIA_TYPE_IMAGE = 1;
 
     // directory name to store captured images and videos
-    private static final String IMAGE_DIRECTORY_NAME = "SalveUmaArvore_IMGS";
+    static final String IMAGE_DIRECTORY_NAME = "SalveUmaArvore_IMGS";
 
     // Session Manager Class
     SessionManager session;
+
+    //AsyncTCadastro asyncTcadastro;
+
+    ProgressDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,12 +108,8 @@ public class CadastroArvoreActivity extends Activity {
             }
         });
 
-        mapView = (MapView)findViewById(R.id.mapview);
 
-        mapView.getController().setZoom(3);
-        mapView.setBuiltInZoomControls(true);
-        ScaleBarOverlay myScaleBarOverlay = new ScaleBarOverlay(this);
-        mapView.getOverlays().add(myScaleBarOverlay);
+        TextView myAddress = (TextView)findViewById(R.id.myaddress);
 
         gps = new GPSTracker(CadastroArvoreActivity.this);
 
@@ -106,32 +117,49 @@ public class CadastroArvoreActivity extends Activity {
             latitude = gps.getLatitude();
             longitude = gps.getLongitude();
 
-            Toast.makeText(
+            /*Toast.makeText(
                     getApplicationContext(),
                     "Sua localização\nLat: " + latitude + "\nLong: "
                             + longitude, Toast.LENGTH_LONG).show();
+*/
+            Geocoder geocoder = new Geocoder(this, Locale.ENGLISH);
 
-            GeoPoint startPoint = new GeoPoint(latitude, longitude);
+            try {
+                List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
 
-            Marker startMarker = new Marker(mapView);
-            startMarker.setPosition(startPoint);
-            startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-            mapView.getOverlays().add(startMarker);
-            startMarker.setIcon(getResources().getDrawable(R.drawable.male_21));
+                if(addresses != null) {
 
-            mapView.getController().setZoom(10);
-            mapView.getController().setCenter(new GeoPoint(latitude, longitude));
+                    Address returnedAddress = addresses.get(0);
+                    rua = addresses.get(0).getThoroughfare();
+                    cep = addresses.get(0).getPostalCode();
+                    bairro = addresses.get(0).getSubLocality();
+
+                    StringBuilder strReturnedAddress = new StringBuilder("Localização da Árvore:\n");
+                    for(int i=0; i<returnedAddress.getMaxAddressLineIndex(); i++) {
+                        strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
+                    }
+                    myAddress.setText("Localização da Árvore:\n" + administrative_area_level_1 + ", " + locality + "\n" +
+                            bairro + ", " + rua + "\n" +
+                            cep);
+                }
+                else{
+                    //myAddress.setText("No Address returned!");
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
         } else {
             gps.showSettingsAlert();
         }
 
         // Get Refferences of Views
-        editTextNeighborhood=(EditText)findViewById(R.id.editTextNeighborhood);
-        editTextRoute=(EditText)findViewById(R.id.editTextRoute);
         editTextNumero=(EditText)findViewById(R.id.editTextNumero);
-        editTextPostalCode=(EditText)findViewById(R.id.editTextPostalCode);
         editTextReferencia=(EditText)findViewById(R.id.editTextPReferencia);
+
         cond_geral=(Spinner)findViewById(R.id.spinnerCondicao);
+
         editTextEspecie=(EditText)findViewById(R.id.editTextEspecie);
         editTextDescricao=(EditText)findViewById(R.id.editTextDescricao);
 
@@ -149,10 +177,12 @@ public class CadastroArvoreActivity extends Activity {
                 country = "Brazil";
                 administrative_area_level_1_id = "35";
                 locality_id = "3549904";
-                neighborhood = editTextNeighborhood.getText().toString();
-                route = editTextRoute.getText().toString();
+
+                neighborhood = bairro;
+                route = rua;
+                postal_code = cep;
+
                 numero = editTextNumero.getText().toString();
-                postal_code = editTextPostalCode.getText().toString();;
                 point_of_interest = editTextReferencia.getText().toString();
 
                 lat = String.valueOf(latitude);
@@ -168,7 +198,7 @@ public class CadastroArvoreActivity extends Activity {
                 descricao = editTextDescricao.getText().toString();
                 String data_cadastro = getDateTime();
 
-                //para a foto
+                //for photo
                 if (fileUri != null){
                     path = fileUri.getPath();
                 } else {
@@ -180,9 +210,10 @@ public class CadastroArvoreActivity extends Activity {
                 // Image
                 Bitmap bm = BitmapFactory.decodeFile(path);
                 ByteArrayOutputStream bao = new ByteArrayOutputStream();
-                bm.compress(Bitmap.CompressFormat.JPEG, 90, bao);
-                byte[] ba = bao.toByteArray();
-                ba1 = Base64.encodeToString(ba, 1);
+                bm.compress(Bitmap.CompressFormat.JPEG, 25, bao);
+                byte[] bytes1 = bao.toByteArray();
+                ba1 = Base64.encodeToString(bytes1, Base64.DEFAULT);
+
 
                 Log.e("base64", "-----" + ba1);
 
@@ -192,18 +223,22 @@ public class CadastroArvoreActivity extends Activity {
 
                 usuario_id = session.getUserDetails().get("id");
 
-                Log.e("id ", usuario_id);
+                Log.i("id ", usuario_id);
 
-                AsyncT asyncT = new AsyncT();
-                asyncT.execute();
+                AsyncTCadastro asyncTcadastro = new AsyncTCadastro();
+                asyncTcadastro.execute();
 
+            }
+        });
 
-                Toast.makeText(getApplicationContext(), "Árvore cadastrada com sucesso! ", Toast.LENGTH_LONG).show();
+        btnCancel = (Button) findViewById(R.id.buttonCancelTree);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
 
-                Intent i = new Intent(CadastroArvoreActivity.this, LoginActivity.class);
-                startActivity(i);
+            @Override
+            public void onClick(View v) {
+                // cancelar
+                Toast.makeText(getApplicationContext(), "Cadastro de árvore cancelado!", Toast.LENGTH_SHORT).show();
                 finish();
-
             }
         });
     }
@@ -213,8 +248,6 @@ public class CadastroArvoreActivity extends Activity {
         Date date = new Date();
         return dateFormat.format(date);
     }
-
-
 
     /*
  * Capturing Camera Image will lauch camera app requrest image capture
@@ -245,12 +278,12 @@ public class CadastroArvoreActivity extends Activity {
             } else if (resultCode == RESULT_CANCELED) {
                 // user cancelled Image capture
                 Toast.makeText(getApplicationContext(),
-                        "User cancelled image capture", Toast.LENGTH_SHORT)
+                        "Captura de imagem cancelada!", Toast.LENGTH_SHORT)
                         .show();
             } else {
                 // failed to capture image
                 Toast.makeText(getApplicationContext(),
-                        "Sorry! Failed to capture image", Toast.LENGTH_SHORT)
+                        "Falha ao tentar capturar imagem!", Toast.LENGTH_SHORT)
                         .show();
             }
         }
@@ -326,8 +359,8 @@ public class CadastroArvoreActivity extends Activity {
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                Log.d(IMAGE_DIRECTORY_NAME, "Oops! Failed create "
-                        + IMAGE_DIRECTORY_NAME + " directory");
+                Log.d(IMAGE_DIRECTORY_NAME, "Falha ao criar diretório "
+                        + IMAGE_DIRECTORY_NAME);
                 return null;
             }
         }
@@ -373,12 +406,28 @@ public class CadastroArvoreActivity extends Activity {
     }
 
     /* Inner class to get response */
-    class AsyncT extends AsyncTask<Void, Void, Void> {
+    public class AsyncTCadastro extends AsyncTask<Void, Void, Void> {
+        ServiceHandler sh = new ServiceHandler();
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Showing progress dialog
+            pDialog = new ProgressDialog(CadastroArvoreActivity.this);
+            pDialog.setMessage("Salvando ...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
         @Override
         protected Void doInBackground(Void... params) {
-            ServiceHandler sh = new ServiceHandler();
+
 
             try {
+
+                //usuario_id = session.getUserDetails().get("id");
+
+                Log.i("id ", usuario_id);
 
                 List<NameValuePair> postParameters = new ArrayList<NameValuePair>();
 
@@ -407,6 +456,7 @@ public class CadastroArvoreActivity extends Activity {
 
                 Log.e("response", "response -----" + responseServer);
 
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -416,10 +466,22 @@ public class CadastroArvoreActivity extends Activity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+
+            if (responseServer.contains("id")){
+                Toast.makeText(getApplicationContext(), "Árvore cadastrada com sucesso! ", Toast.LENGTH_LONG).show();
+                finish();
+
+            } else {
+                Toast.makeText(getApplicationContext(), "Dados inválidos!", Toast.LENGTH_LONG).show();
+            }
+
+
         }
     }
 
 }
-
 
 

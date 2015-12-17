@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -16,7 +18,6 @@ import org.json.JSONObject;
 import org.osmdroid.bonuspack.overlays.Marker;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
 
 import java.io.UnsupportedEncodingException;
@@ -35,7 +36,7 @@ public class HomeActivity extends Activity {
     String jsonStr = null;
 
     /// URL to get trees JSON
-    private static String url = "http://10.0.3.2:8000/trees/?format=json";
+    private static String url = "http://159.203.142.217/trees/?format=json";
 
     // JSON Node names
     private static final String TAG_TREES = "Trees List";
@@ -52,11 +53,21 @@ public class HomeActivity extends Activity {
     private static final String TAG_NUMERO = "numero";
     private static final String TAG_ADDRESS = "endereco";
 
+    //define estado e cidade
+    String administrative_area_level_1 = "São Paulo";
+    String locality = "São José dos Campos";
+
+    String id, point, especie, condicao, endereco;
+
     // Hashmap for ListView
     ArrayList<HashMap<String, String>> treeList;
 
     // Session Manager Class
     SessionManager session;
+
+    Marker startMarker;
+
+    AsyncTrees getTrees = new AsyncTrees();
 
 
     @Override
@@ -76,7 +87,7 @@ public class HomeActivity extends Activity {
         marker.setBounds(0, markerHeight, markerWidth, 0);
 
 
-        //verifica localização do usuário
+        //user location
         gps = new GPSTracker(HomeActivity.this);
 
         if (gps.canGetLocation()) {
@@ -100,13 +111,25 @@ public class HomeActivity extends Activity {
 
 
         // Calling async task to get json
-        new GetTrees().execute();
+        getTrees.execute();
+
 
         mapView.getController().setZoom(14);
 
         mapView.setBuiltInZoomControls(true);
         ScaleBarOverlay myScaleBarOverlay = new ScaleBarOverlay(this);
         mapView.getOverlays().add(myScaleBarOverlay);
+
+    }
+
+    //method to open tree detail
+    public void visualizarArvore(View view){
+
+        // Starting single tree activity
+        Intent in = new Intent(getApplicationContext(), SingleTree_Activity.class);
+        String id  = ((TextView)findViewById(R.id.bubble_description)).getText().toString();
+        in.putExtra(TAG_ID, id);
+        startActivity(in);
 
     }
 
@@ -131,14 +154,6 @@ public class HomeActivity extends Activity {
             return true;
         }
 
-        if (id == R.id.list_tree) {
-
-            Intent i = new Intent(this, TreesActivity.class);
-            startActivity(i);
-
-            return true;
-        }
-
         if (id == R.id.logout){
             session.logoutUser();
             Toast.makeText(getApplicationContext(), "Logout realizado!", Toast.LENGTH_LONG).show();
@@ -157,12 +172,10 @@ public class HomeActivity extends Activity {
     /**
      * Async task class to get json by making HTTP call
      * */
-    /**
-     * Async task class to get json by making HTTP call
-     * */
-    public class GetTrees extends AsyncTask<Void, Void, Void> {
+    public class AsyncTrees extends AsyncTask<Void, Void, Void> {
 
-        ArrayList<OverlayItem> anotherOverlayItemArray;
+        // Creating service handler class instance
+        ServiceHandler sh = new ServiceHandler();
 
         @Override
         protected void onPreExecute() {
@@ -172,11 +185,9 @@ public class HomeActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            // Creating service handler class instance
-            ServiceHandler sh = new ServiceHandler();
+
 
             // Making a request to url and getting response
-
             try {
                 jsonStr = sh.makeServiceCall(url, ServiceHandler.GET);
             } catch (UnsupportedEncodingException e) {
@@ -193,16 +204,13 @@ public class HomeActivity extends Activity {
 
                         JSONObject c = json.getJSONObject(i);
 
-                        String id = c.getString(TAG_ID);
-                        String point = c.getString(TAG_POINT);
-                        String especie = c.getString(TAG_ESPECIE);
+                        id = c.getString(TAG_ID);
+                        point = c.getString(TAG_POINT);
+                        especie = c.getString(TAG_ESPECIE);
                         if (especie.equals("") || especie.equals(" ")){
                             especie = "Espécie não informada";
                         }
-                        String condicao = c.getString(TAG_CONDICAO);
-
-                        String administrative_area_level_1 = c.getString(TAG_ADMINISTRATIVE_AREA_LEVEL_1);
-                        String locality = c.getString(TAG_LOCALITY);
+                        condicao = c.getString(TAG_CONDICAO);
 
                         String neighborhood = ", " + c.getString(TAG_NEIGHBOORHOOD);
 
@@ -220,28 +228,29 @@ public class HomeActivity extends Activity {
                             numero = "";
                         }
 
-                        String address = administrative_area_level_1 + ", " + locality + neighborhood +
+                        endereco = administrative_area_level_1 + ", " + locality + neighborhood +
                                 route + numero;
 
                         String lat = point.substring(7, 17);
                         String lon = point.substring(28, 38);
 
                         // adding each child node to HashMap key => value
+                        tree.put(TAG_ID, id);
                         tree.put(TAG_LAT, lat);
                         tree.put(TAG_LON, lon);
                         tree.put(TAG_CONDICAO, condicao);
-                        tree.put(TAG_ADDRESS, address);
+                        tree.put(TAG_ADDRESS, endereco);
                         tree.put(TAG_ESPECIE, especie);
 
 
-                        // adding contact to contact list
+                        // adding contact to tree list
                         treeList.add(tree);
 
                         if (tree.get(TAG_CONDICAO).contains("Boa")) {
 
                             GeoPoint startPoint = new GeoPoint(Float.parseFloat(tree.get(TAG_LAT)), Float.parseFloat(tree.get(TAG_LON)));
 
-                            Marker startMarker = new Marker(mapView);
+                            startMarker = new Marker(mapView);
                             startMarker.setPosition(startPoint);
                             startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                             adiciona(startMarker);
@@ -249,6 +258,7 @@ public class HomeActivity extends Activity {
                             startMarker.setIcon(getResources().getDrawable(R.drawable.tree_good));
                             startMarker.setTitle("Espécie: " + tree.get(TAG_ESPECIE));
                             startMarker.setSubDescription("Endereço: " + tree.get(TAG_ADDRESS));
+                            startMarker.setSnippet(tree.get(TAG_ID));
 
                         }
 
@@ -256,7 +266,7 @@ public class HomeActivity extends Activity {
 
                             GeoPoint startPoint = new GeoPoint(Float.parseFloat(tree.get(TAG_LAT)), Float.parseFloat(tree.get(TAG_LON)));
 
-                            Marker startMarker = new Marker(mapView);
+                            startMarker = new Marker(mapView);
                             startMarker.setPosition(startPoint);
                             startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                             adiciona(startMarker);
@@ -264,6 +274,8 @@ public class HomeActivity extends Activity {
                             startMarker.setIcon(getResources().getDrawable(R.drawable.tree_regular));
                             startMarker.setTitle("Espécie: " + tree.get(TAG_ESPECIE));
                             startMarker.setSubDescription("Endereço: " + tree.get(TAG_ADDRESS));
+                            startMarker.setSnippet(tree.get(TAG_ID));
+
 
                         }
 
@@ -271,7 +283,7 @@ public class HomeActivity extends Activity {
 
                             GeoPoint startPoint = new GeoPoint(Float.parseFloat(tree.get(TAG_LAT)), Float.parseFloat(tree.get(TAG_LON)));
 
-                            Marker startMarker = new Marker(mapView);
+                            startMarker = new Marker(mapView);
                             startMarker.setPosition(startPoint);
                             startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                             adiciona(startMarker);
@@ -279,14 +291,14 @@ public class HomeActivity extends Activity {
                             startMarker.setIcon(getResources().getDrawable(R.drawable.tree_bad));
                             startMarker.setTitle("Espécie: " + tree.get(TAG_ESPECIE));
                             startMarker.setSubDescription("Endereço: " + tree.get(TAG_ADDRESS));
-
+                            startMarker.setSnippet(tree.get(TAG_ID));
                         }
 
                         if (tree.get(TAG_CONDICAO).contains("Caída")) {
 
                             GeoPoint startPoint = new GeoPoint(Float.parseFloat(tree.get(TAG_LAT)), Float.parseFloat(tree.get(TAG_LON)));
 
-                            Marker startMarker = new Marker(mapView);
+                            startMarker = new Marker(mapView);
                             startMarker.setPosition(startPoint);
                             startMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
                             adiciona(startMarker);
@@ -294,11 +306,9 @@ public class HomeActivity extends Activity {
                             startMarker.setIcon(getResources().getDrawable(R.drawable.down));
                             startMarker.setTitle("Espécie: " + tree.get(TAG_ESPECIE));
                             startMarker.setSubDescription("Endereço: " + tree.get(TAG_ADDRESS));
-
+                            startMarker.setSnippet(tree.get(TAG_ID));
 
                         }
-
-                        Log.i("Condição", tree.get(TAG_ADDRESS));
                     }
 
                 } catch (JSONException e) {
@@ -317,7 +327,8 @@ public class HomeActivity extends Activity {
         }
         @Override
         protected void onPostExecute(Void result){
-                super.onPostExecute(result);
+            super.onPostExecute(result);
+
 
         }
 
